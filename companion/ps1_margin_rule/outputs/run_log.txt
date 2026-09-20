@@ -1,0 +1,6 @@
+Standard-library model run; outputs are synthetic, not field evidence.
+Assumed reputation demand lift rho_R: 0.0000
+Factorial cells vary margin rule and seller information; sparse cells use rho_R=0.
+Price, product-quality evidence, and delivery are held fixed in the proposed experiment.
+Baseline farmer participation thresholds (K): Fixed 43.2; Chosen 38.4.
+Change rho_R only after estimating it from the planned behavioral study.

@@ -1,19 +1,28 @@
 ---
-title: COMSCI ECON 206 Strategic Reasoning Lab
-emoji: 🎲
+title: Farmer Intermediary Margin Lab
+emoji: 🧪
 colorFrom: blue
 colorTo: green
 sdk: static
 app_file: index.html
-pinned: false
+short_description: Explore a synthetic margin-rule model and planned 2x2 study.
 ---
-# Strategic Reasoning Lab
-COMSCI/ECON 206 · Week 3 · Instructor Luyao Zhang.
 
-Open `index.html` locally to play. To host after review, create a Hugging Face Space with the Static SDK, then upload this README, index.html and model.js at its root. No secrets, package installation, build command, backend or API calls are required. These files have not been published to a Space.
+# Farmer–Intermediary Margin Lab
 
-The model is a simplified truncated logit cognitive hierarchy for a coordination game. It is an original classroom adaptation inspired by Jia et al., NeurIPS 2025, https://doi.org/10.52202/085713-1955 and Camerer, Ho & Chong, QJE 2004, https://doi.org/10.1162/0033553041502225. The baseline matrix follows Jia et al., Table 1(b); variations are teaching examples. Synthetic play is neither human-subject evidence nor a replication of the original LLM study.
+An interactive, assumption-based companion to the PS1 proposal. It compares a fixed margin rule with an intermediary-chosen rule and shows how modeled farmer participation and completed units change with coordination cost.
 
-Companion: notebook 06 in the class repository. Run both at tau=1.5, gamma=1.2, Safe=5 to compare probabilities. No responses are transmitted or stored. Refreshing resets the pseudorandom sequence and local display.
+Live Space: [Farmer–Intermediary Margin Lab](https://huggingface.co/spaces/dku-comsci-econ206-2026/Farmer_Intermediary_Margin_Lab)
 
-The instructor will configure the final course repository and Space URLs. Official Static Space guide: https://huggingface.co/docs/hub/spaces-sdks-static
+**This is a synthetic teaching simulation, not a deployed behavioral experiment or evidence about real households.** No responses are collected or sent to a server. The reputation parameter is set to zero by default and should be changed only after a behavioral estimate is available; any nonzero value is a scenario assumption.
+
+## Research design represented here
+
+The proposed 2 × 2 study varies (1) fixed versus intermediary-chosen margin rule and (2) sparse versus verified seller-history information. In the planned vignette, the listed household price, product identity, quality evidence, quantity, and delivery are held constant across cells. Outcomes include purchase choice, trust, perceived price fairness, expected quality, and willingness to pay. The design can distinguish reputation information from changes in perceived price or product quality.
+
+## Files
+
+- `index.html` — static interface
+- `model.js` — model calculations; no external packages
+
+The app runs as a static Hugging Face Space and can also be opened locally by opening `index.html` in a browser.

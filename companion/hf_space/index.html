@@ -1,15 +1,126 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Strategic Reasoning Lab · COMSCI/ECON 206</title><style>
-:root{--ink:#18324a;--blue:#315efb;--teal:#14877d;--line:#dbe3ec;--pale:#f5f7fb}*{box-sizing:border-box}body{margin:0;background:white;color:var(--ink);font:17px/1.5 system-ui,sans-serif}main{max-width:1180px;margin:auto;padding:34px 32px 44px}a{color:#174cb1}header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}.eyebrow{font-size:13px;font-weight:750;letter-spacing:.09em;color:var(--teal)}h1{font-size:44px;line-height:1.1;letter-spacing:-.03em;margin:12px 0}h2{font-size:25px;line-height:1.25;margin:0 0 15px}h3{font-size:18px;margin:16px 0 6px}p{margin:8px 0 15px}.lede{max-width:850px;font-size:19px}.grid{display:grid;grid-template-columns:1.05fr 1fr;gap:34px}.panel{padding:24px;border:1px solid var(--line);border-radius:16px}.tag{display:inline-block;padding:4px 10px;background:#edf7f5;color:#08645b;border-radius:5px;font-size:13px;font-weight:650}.matrix{border-collapse:collapse;width:100%;margin:18px 0;font-size:18px}.matrix th,.matrix td{padding:14px 8px;border-bottom:1px solid var(--line);text-align:center}.matrix th{font-size:14px}.matrix td:first-child{font-size:14px;text-align:left;font-weight:650}.matrix .efficient{background:#edf7f5}.matrix .safe{background:var(--pale)}.small{font-size:14px;color:#42576b}.choices{display:flex;gap:10px;margin:16px 0}button{border:1px solid var(--blue);border-radius:8px;background:var(--blue);color:white;padding:12px 18px;font:inherit;font-weight:650;cursor:pointer}button.secondary{background:white;color:var(--blue)}button:focus-visible,input:focus-visible{outline:3px solid #df982b;outline-offset:3px}.result{min-height:102px;padding:16px;background:var(--pale);border-radius:9px}.controls label{display:flex;justify-content:space-between;margin-top:12px;font-weight:620;font-size:15px}.controls input{width:100%;accent-color:var(--blue);margin:11px 0 0}.metric{font-size:36px;font-weight:750;color:var(--blue);margin-top:12px}.bar{height:23px;background:var(--pale);border-radius:5px;overflow:hidden;margin:10px 0}.bar span{display:block;height:100%;background:var(--blue);transition:width .15s}.bench{padding:13px 0;border-top:1px solid var(--line);margin-top:16px}.questions{margin-top:26px;padding:21px 24px;background:var(--pale);border-radius:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:25px}.questions b{color:var(--teal)}details{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}summary{cursor:pointer;font-weight:700}footer{font-size:13px;margin-top:22px;color:#42576b}.sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0)}@media(max-width:780px){main{padding:24px 18px}h1{font-size:36px}.grid,.questions{grid-template-columns:1fr}.panel{padding:20px}.choices{flex-wrap:wrap}}
-</style></head><body><main>
-<header><div class="eyebrow">COMSCI / ECON 206 · WEEK 3 · PROF. LUYAO ZHANG</div><h1>Will you coordinate?</h1><p class="lede">A good outcome depends on what someone else chooses. Play a synthetic opponent, then explore how beliefs and bounded reasoning change its behavior.</p><span class="tag">PS1 sample · synthetic classroom model</span></header>
-<div class="grid"><section class="panel"><h2>1. Choose in a coordination game</h2><p>Coordinate together for 8 each. The Safe action protects you if the other player does not coordinate.</p><table class="matrix" aria-label="Game payoffs, your payoff first"><thead><tr><th>You / opponent</th><th>Coordinate</th><th>Safe</th></tr></thead><tbody><tr><td>Coordinate</td><td class="efficient">8, 8</td><td>0, 7</td></tr><tr><td>Safe</td><td>7, 0</td><td class="safe" id="safe-cell">5, 5</td></tr></tbody></table><p class="small">Each cell shows your payoff, then the opponent’s. Choices are simultaneous; the opponent is sampled from the model on the right.</p><div class="choices"><button id="choose-c">Choose Coordinate</button><button id="choose-s" class="secondary">Choose Safe</button></div><div id="play-result" class="result" aria-live="polite">Make a prediction before playing. Which action would you choose, and what do you believe the opponent will do?</div></section>
-<section class="panel"><h2>2. Change the model</h2><div class="controls"><label for="safe">Safe–Safe payoff <output id="safe-val">5.0</output></label><input id="safe" type="range" min="1" max="7" step=".5" value="5"><label for="tau">Mean reasoning level τ <output id="tau-val">1.5</output></label><input id="tau" type="range" min="0" max="5" step=".1" value="1.5"><label for="gamma">Response precision growth γ <output id="gamma-val">1.2</output></label><input id="gamma" type="range" min="1" max="2" step=".05" value="1.2"></div><div class="metric" id="probability">—</div><div class="small">model probability of Coordinate</div><div class="bar" role="img" aria-label="Predicted coordination probability" id="prob-bar"><span id="prob-fill"></span></div><p id="payoff" class="small"></p><div class="bench"><strong>Nash benchmarks</strong><p class="small" id="benchmark"></p><p class="small" id="residual"></p></div></section></div>
-<section class="questions"><div><b>Economics</b><p>How do incentives change the appeal of coordination?</p></div><div><b>Computer science</b><p>Can you reproduce and check the prediction in Colab?</p></div><div><b>Behavioral science</b><p>What evidence could distinguish shallow reasoning from noisy choice?</p></div></section>
-<details><summary>Model, evidence, and research connection</summary><p>This is a simplified truncated logit cognitive hierarchy. Level 0 mixes uniformly; level k responds to a normalized Poisson mixture of lower levels. Precision is γ<sup>k</sup>. We retain levels 0–16 and renormalize. The model is neither a Nash solver nor a quantal-response-equilibrium fixed point.</p><p id="tail" class="small"></p><p>Inspired by <a href="https://papers.nips.cc/paper_files/paper/2025/hash/54b13427fc2c9180f85c3d76cdcf076e-Abstract-Conference.html">Jia et al., NeurIPS 2025</a>, with the baseline matrix from Table 1(b), and <a href="https://doi.org/10.1162/0033553041502225">Camerer, Ho &amp; Chong (2004)</a>. This original teaching adaptation does not reproduce the paper’s LLM evaluation. No real LLM calls or human research data are used.</p><p>Your proposal should state a hypothesis, compare alternative explanations, and distinguish expected findings from synthetic diagnostics. Use notebook 06 in the companion repository to inspect every calculation.</p></details>
-<footer>Runs locally in your browser. Choices stay in this page and disappear on refresh. No account, API key, or data collection. Course prototype; hosting is prepared separately.</footer>
-</main><script src="model.js"></script><script>
-const $=id=>document.getElementById(id);let current;let state=206;
-function redraw(){let safe=+$('safe').value,tau=+$('tau').value,gamma=+$('gamma').value;current=coordinationModel(tau,gamma,safe);$('safe-val').textContent=safe.toFixed(1);$('tau-val').textContent=tau.toFixed(1);$('gamma-val').textContent=gamma.toFixed(2);$('safe-cell').textContent=`${safe}, ${safe}`;let percent=(100*current.p).toFixed(1);$('probability').textContent=percent+'%';$('prob-fill').style.width=percent+'%';$('prob-bar').setAttribute('aria-label',`Predicted probability of Coordinate ${percent} percent`);$('payoff').textContent=`Expected payoff against this model: Coordinate ${current.uC.toFixed(2)}; Safe ${current.uS.toFixed(2)}.`;$('benchmark').textContent=`Both Coordinate and both Safe are pure equilibria. In the interior mixed equilibrium, each coordinates with probability ${(100*current.mixed).toFixed(1)}%.`;$('residual').textContent=`If both use the model distribution, the largest unilateral gain is ${current.regret.toFixed(3)} payoff units. A nonzero gain is allowed by this bounded-reasoning model.`;$('tail').textContent=`Omitted Poisson probability before normalization: ${current.tail.toExponential(2)}. This numerical approximation is distinct from behavioral validity.`;}
-function play(choice){state=(1664525*state+1013904223)>>>0;let opponent=(state/4294967296)<current.p?'Coordinate':'Safe';let safe=+$('safe').value;let payoff=choice==='Coordinate'?(opponent==='Coordinate'?8:0):(opponent==='Coordinate'?7:safe);$('play-result').textContent=`You chose ${choice}. The synthetic opponent chose ${opponent}. Your payoff: ${payoff}. One round does not establish a behavioral pattern; compare predictions across model settings.`;}
-for(let id of ['safe','tau','gamma'])$(id).addEventListener('input',redraw);$('choose-c').addEventListener('click',()=>play('Coordinate'));$('choose-s').addEventListener('click',()=>play('Safe'));redraw();
-</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore a synthetic model of fixed and intermediary-chosen margin rules, farmer participation, and household opportunity.">
+  <title>Farmer–Intermediary Margin Lab</title>
+  <style>
+    :root { color-scheme: light; --ink:#18334d; --muted:#536a80; --teal:#078b80; --line:#dbe4ec; --wash:#f3f6fa; --white:#fff; --amber:#8a4f00; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#edf2f7; color:var(--ink); font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { width:min(1100px, calc(100% - 32px)); margin:32px auto 64px; }
+    .hero, section, footer { background:var(--white); border:1px solid var(--line); border-radius:16px; padding:clamp(20px,4vw,36px); box-shadow:0 8px 28px #18334d0a; }
+    .hero { border-top:6px solid var(--teal); }
+    .eyebrow { color:var(--teal); font-size:.82rem; font-weight:800; letter-spacing:.11em; text-transform:uppercase; margin:0 0 8px; }
+    h1 { font-size:clamp(2rem,5vw,3.15rem); line-height:1.1; margin:0 0 10px; letter-spacing:-.035em; }
+    h2 { font-size:1.45rem; margin:0 0 14px; }
+    h3 { font-size:1.05rem; margin:0 0 8px; }
+    p { margin:8px 0 14px; }
+    .lede { color:var(--muted); font-size:1.08rem; max-width:780px; }
+    .tags { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; }
+    .tag { background:#e7f5f3; border-radius:999px; color:#08766e; font-size:.83rem; font-weight:700; padding:5px 11px; }
+    .notice { background:#fff6e6; border-left:4px solid #db9b2b; border-radius:8px; color:#563d17; padding:13px 16px; margin-top:18px; }
+    section { margin-top:18px; }
+    .controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .control { background:var(--wash); border-radius:12px; padding:16px; }
+    label { display:block; font-weight:750; margin-bottom:6px; }
+    .control small { display:block; color:var(--muted); min-height:42px; }
+    input[type=range] { width:100%; accent-color:var(--teal); margin:14px 0 3px; }
+    select { width:100%; border:1px solid #b9c8d6; border-radius:8px; background:white; color:var(--ink); font:inherit; padding:9px; margin-top:10px; }
+    output { display:block; color:var(--teal); font-size:1.28rem; font-weight:800; }
+    .callout { background:#e9f5f4; border-radius:12px; padding:17px 20px; margin-top:18px; }
+    .callout strong { color:#08766e; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:650px; }
+    th,td { text-align:left; padding:11px 12px; border-bottom:1px solid var(--line); }
+    th { color:var(--muted); font-size:.82rem; text-transform:uppercase; letter-spacing:.04em; }
+    td.num { font-variant-numeric:tabular-nums; }
+    .status { font-weight:750; }
+    .grid-two { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .mini { background:var(--wash); border-radius:12px; padding:18px; }
+    .mini p:last-child { margin-bottom:0; }
+    .steps { padding-left:1.25rem; }
+    .steps li { margin:7px 0; }
+    .muted { color:var(--muted); }
+    footer { margin-top:18px; color:var(--muted); font-size:.9rem; }
+    @media(max-width:700px) { .controls,.grid-two { grid-template-columns:1fr; } main { width:min(100% - 20px, 1100px); margin-top:10px; } }
+  </style>
+  <script src="model.js" defer></script>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <p class="eyebrow">COMSCI–ECON 206 · PS1</p>
+    <h1>Farmer–Intermediary Margin Lab</h1>
+    <p class="lede">How do fixed versus intermediary-chosen margin rules shape farmer participation and modeled household access? Explore the assumptions behind the comparison.</p>
+    <div class="tags"><span class="tag">Interactive model</span><span class="tag">Planned 2 × 2 test</span><span class="tag">No data collection</span></div>
+    <div class="notice"><strong>Interpretation:</strong> All numbers on this page are generated by a synthetic model. No behavioral study has been run. The reputation response defaults to zero; a nonzero setting is only a scenario until estimated from the proposed study.</div>
+  </header>
+
+  <section aria-labelledby="scenario-heading">
+    <h2 id="scenario-heading">Explore a scenario</h2>
+    <div class="controls">
+      <div class="control">
+        <label for="cost">Coordination cost, K</label>
+        <small>Higher K makes farmer participation harder. The model's baseline cutoffs are 43.2 under a fixed rule and 38.4 under a chosen rule.</small>
+        <input id="cost" type="range" min="0" max="50" step="0.5" value="12">
+        <output id="cost-value" for="cost">12.0</output>
+      </div>
+      <div class="control">
+        <label for="rho">Assumed response to verified seller history, ρ<sub>R</sub></label>
+        <small>A proportional demand shifter applied only to the verified-information cells. Keep at zero until a treatment effect is estimated.</small>
+        <input id="rho" type="range" min="0" max="0.5" step="0.01" value="0">
+        <output id="rho-value" for="rho">0%</output>
+      </div>
+      <div class="control">
+        <label for="information">Seller-history information</label>
+        <small>Choose which information condition to use for the rule recommendation. The full four-cell comparison remains visible below.</small>
+        <select id="information"><option value="Sparse">Sparse history</option><option value="Verified">Verified history</option></select>
+      </div>
+      <div class="control">
+        <label for="priority">Outcome used to rank the two rules</label>
+        <small>The recommendation changes with the outcome that the decision maker values.</small>
+        <select id="priority">
+          <option value="completed_units">Modeled completed units (access proxy)</option>
+          <option value="farmer_net">Modeled farmer net earnings</option>
+          <option value="intermediary_profit">Modeled intermediary profit</option>
+        </select>
+      </div>
+    </div>
+    <div class="callout" id="recommendation" aria-live="polite"></div>
+  </section>
+
+  <section aria-labelledby="cells-heading">
+    <h2 id="cells-heading">The four comparison cells</h2>
+    <p class="muted">The information treatment and margin rule are separate dimensions. Listed household price, product identity, quality evidence, quantity, and delivery are held fixed in the proposed vignette; the table reports model quantities, not observed household purchases.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Seller-history information</th><th>Margin rule</th><th>Margin m</th><th>Effort e</th><th>Completed units*</th><th>Farmer net*</th><th>Intermediary profit*</th><th>Participation</th></tr></thead>
+        <tbody id="results"></tbody>
+      </table>
+    </div>
+    <p class="muted"><small>*Conditional model outputs after the farmer's participation decision. Completed units are an access proxy, not observed purchases, household welfare, or consumption inequality.</small></p>
+  </section>
+
+  <section aria-labelledby="threshold-heading">
+    <h2 id="threshold-heading">Where the ranking can change</h2>
+    <div class="grid-two">
+      <article class="mini"><h3>Participation thresholds</h3><p id="thresholds"></p><p class="muted">For 38.4 &lt; K ≤ 43.2 at ρ<sub>R</sub> = 0, the farmer participates only under the fixed rule. The realized-profit comparison therefore reverses because the chosen-rule option has no trade.</p></article>
+      <article class="mini"><h3>When both rules trade</h3><p>Under the baseline assumptions, the fixed rule generates more modeled completed units and farmer net earnings; the chosen rule generates more intermediary profit. These rankings depend on the assumed functional forms and parameters.</p><p class="muted">Use the coordination-cost slider to see the participation boundary. Use the ρ<sub>R</sub> slider only for sensitivity scenarios until experimental estimates are available.</p></article>
+    </div>
+  </section>
+
+  <section aria-labelledby="study-heading">
+    <h2 id="study-heading">Planned test: separate reputation from price and quality perceptions</h2>
+    <p>The proposal's 2 × 2 behavioral study varies (1) fixed versus intermediary-chosen margin rules and (2) sparse versus verified seller-history information. The household-facing listed price, product identity, quality evidence, quantity, and delivery stay the same across cells.</p>
+    <div class="grid-two">
+      <article class="mini"><h3>Measure household responses</h3><p>Record purchase choice, trust, perceived price fairness, expected product quality, and willingness to pay. If the history signal changes perceived price or quality, analyze those as competing pathways rather than assigning the whole response to trust.</p></article>
+      <article class="mini"><h3>Connect the study to the model</h3><p>Estimate the verified-history effect on purchase probability, translate it into the model's ρ<sub>R</sub> demand shifter, then rerun the 2 × 2 comparison and coordination-cost sensitivity. Until then, ρ<sub>R</sub> = 0 is the baseline.</p></article>
+    </div>
+  </section>
+
+  <footer><strong>Model scope.</strong> This browser app has no analytics, does not save inputs, and sends no responses to a server. It illustrates conditional predictions, not causal effects or empirical findings.</footer>
+</main>
+</body>
+</html>
